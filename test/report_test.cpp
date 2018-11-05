@@ -796,7 +796,7 @@ TEST_F(GausReport, posts_correct_json_for_two_update_report) {
   EXPECT_NE(std::string::npos, curlPerformData[0].CURLOPT_POSTFIELDS.find(
       "\"ts\":\"" + std::string(report[1].report.update_status.ts) + "\""));
   EXPECT_NE(std::string::npos, curlPerformData[0].CURLOPT_POSTFIELDS.find(
-      "\"" + std::string(vstrings[1].name) + "\":\"" + std::string(vstrings[1].value) + "\""));
+      "\"" + std::string(vstrings2[0].name) + "\":\"" + std::string(vstrings2[0].value) + "\""));
 
   //Cleanup after test
   //Free report:
