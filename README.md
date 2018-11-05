@@ -14,7 +14,7 @@ docker run gaus-test
 From terminal:
   1) RUN mkdir -p _build && cd _build && cmake -G"Unix Makefiles" ../ && make -j8
 
-## From CLion:
+## Working from CLion:
 Import project and it will pickup the cmake files automatically.
 
 ## Running Valgrind
