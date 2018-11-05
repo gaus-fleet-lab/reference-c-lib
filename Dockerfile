@@ -40,5 +40,5 @@ RUN mkdir -p _build/release && cd _build/release && cmake -G"Unix Makefiles" -D"
 RUN mkdir -p _build/debug && cd _build/debug && cmake -G"Unix Makefiles" -D"CMAKE_BUILD_TYPE=debug" ../../ && make -j8
 RUN mkdir -p _build/debug && cd _build/debug && cmake -G"Unix Makefiles" -D"CMAKE_BUILD_TYPE=Sanitize" ../../ && make -j8
 
-#RUN valgrind --tool=memcheck --gen-suppressions=all --leak-check=full --leak-resolution=med --track-origins=yes _build/release/test/unittests
+RUN valgrind --error-exitcode=1 --tool=memcheck --leak-check=full --leak-resolution=med --track-origins=yes _build/release/test/unittests
 CMD make -C _build/release -j8 check

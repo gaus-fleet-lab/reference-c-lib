@@ -3,3 +3,5 @@ cmake-build-release/
 cmake-build-sanitize-clang/
 .idea/
 _build/
+.dockerignore
+Dockerfile
