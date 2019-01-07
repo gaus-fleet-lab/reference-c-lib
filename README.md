@@ -30,4 +30,4 @@ or better:
 Build with cmake and `-DCMAKE_BUILD_TYPE=Sanitize` or setup appropriate settings in CLion
 
 ## Compile time flags
-- `GAUS_USE_RAWLOG`: Define in order to disable use of syslog and default to raw `printf()` logging
+- `GAUS_USE_RAWLOG`: Define in order to disable use of syslog and default to raw `printf()` logging.
