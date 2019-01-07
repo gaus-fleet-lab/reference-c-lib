@@ -204,6 +204,11 @@ static int request_post(const char *url, const char *auth_token, const char *pay
   gaus_curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strlen(payload));
   gaus_curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
+#ifdef GAUS_NO_CA_CHECK
+  logging(L_DEBUG, "skipping verify peer certificate");
+  curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+#endif
+
   gaus_curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, response_writer);
   gaus_curl_easy_setopt(curl, CURLOPT_WRITEDATA, response);
 
@@ -253,6 +258,11 @@ static int request_get(const char *url, const char *auth_token,
   if (!curl) {
     goto error;
   }
+
+#ifdef GAUS_NO_CA_CHECK
+  logging(L_DEBUG, "skipping verify peer certificate");
+  curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+#endif
 
   gaus_curl_easy_setopt(curl, CURLOPT_URL, url);
   gaus_curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
