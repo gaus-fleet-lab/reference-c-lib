@@ -18,6 +18,11 @@
 #include "curl_wrapper.h"
 #include "gaus.h"
 
+#ifndef VERSION
+#define VERSION "v0.0.0"
+#endif
+
+
 typedef struct FileResponse {
   int fd;
   FILE *file;
