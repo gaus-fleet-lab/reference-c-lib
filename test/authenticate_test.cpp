@@ -434,6 +434,37 @@ TEST_F(GausAuthenticate, does_not_use_proxy_if_null) {
   free(status);
 }
 
+
+TEST_F(GausAuthenticate, has_correct_version_in_header) {
+  std::string serverUrl = "fakeServerUrl";
+  gaus_session_t session;
+
+  gaus_global_init(serverUrl.c_str(), NULL);
+
+  gaus_error_t *status = gaus_authenticate("fakeDeviceAccess", "fakeDeviceSecret", &session);
+
+  gaus_version_t version = gaus_client_library_version();
+  std::ostringstream os;
+  os << "v" << version.major << "." << version.minor << "." << version.patch;
+  std::string versionString = os.str();
+
+  ASSERT_EQ(static_cast<gaus_error_t *>(NULL), status);
+  EXPECT_EQ(curlPerformData.size(), 1);
+  auto curlopt_headers = curlPerformData[0].CURLOPT_HEADER;
+  EXPECT_GE(curlopt_headers.size(), 1); //At least one header
+  EXPECT_NE(std::end(curlopt_headers),
+            std::find_if(std::begin(curlopt_headers), std::end(curlopt_headers),
+                         [&versionString](const std::string a) {
+                           return a.find(versionString) != std::string::npos;
+                         }
+
+            ));
+
+  free(session.device_guid);
+  free(session.product_guid);
+  free(session.token);
+}
+
 //Test against a real backend
 //#define TEST_GAUS_REAL
 #ifdef TEST_GAUS_REAL
