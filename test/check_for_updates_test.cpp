@@ -1613,6 +1613,51 @@ TEST_F(GausCheckForUpdates, gets_a_nul_for_missing_things_if_not_file_type) {
   free(status);
 }
 
+TEST_F(GausCheckForUpdates, has_correct_version_in_agent_header) {
+  std::string serverUrl = "fakeServerUrl";
+  std::string fakeDeviceGuid = "fakeDeviceGUID";
+  std::string fakeProductGuid = "fakeProductGUID";
+  std::string fakeToken = "fakeToken";
+  gaus_session_t fakeSession = {
+      strdup(fakeDeviceGuid.c_str()),
+      strdup(fakeProductGuid.c_str()),
+      strdup(fakeToken.c_str())
+  };
+  unsigned int filterCount = 0;
+  unsigned int updateCount = 0;
+  gaus_update_t *updates = NULL;
+
+  gaus_global_init(serverUrl.c_str(), NULL);
+
+  gaus_error_t *status = gaus_check_for_updates(&fakeSession, filterCount, NULL, &updateCount, &updates);
+
+  gaus_version_t version = gaus_client_library_version();
+  std::ostringstream os;
+  os << "v" << version.major << "." << version.minor << "." << version.patch;
+  std::string versionString = os.str();
+
+  ASSERT_EQ(static_cast<gaus_error_t *>(NULL), status);
+  EXPECT_EQ(curlPerformData.size(), 1);
+  auto curlopt_headers = curlPerformData[0].CURLOPT_HEADER;
+  EXPECT_GE(curlopt_headers.size(), 1); //At least one header
+  EXPECT_NE(std::end(curlopt_headers),
+            std::find_if(std::begin(curlopt_headers), std::end(curlopt_headers),
+                         [&versionString](const std::string a) {
+                           return a.find(versionString) != std::string::npos;
+                         }
+
+            ));
+
+//Cleanup after test
+  free(fakeSession
+           .device_guid);
+  free(fakeSession
+           .product_guid);
+  free(fakeSession
+           .token);
+  free(status);
+}
+
 //Test against a real backend
 //#define TEST_GAUS_REAL
 #ifdef TEST_GAUS_REAL
