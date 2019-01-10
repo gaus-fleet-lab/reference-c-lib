@@ -24,7 +24,7 @@ gaus_global_state_t gaus_global_state = {
 };
 
 gaus_version_t gaus_client_library_version(void) {
-  gaus_version_t version = {0, 0, 0};
+  gaus_version_t version = {0, 0, 2};
   return version;
 }
 
