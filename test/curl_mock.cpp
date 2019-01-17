@@ -72,6 +72,9 @@ CURLcode mock_curl_easy_setopt(CURL *curl, CURLoption option, ...) {
     case CURLOPT_PROXY:
       allCurlData[curl].setOptions.CURLOPT_PROXY = va_arg(valist, char*);
       break;
+    case CURLOPT_CAPATH:
+      allCurlData[curl].setOptions.CURLOPT_CAPATH = va_arg(valist, char*);
+      break;
     case CURLOPT_HTTPGET:
       allCurlData[curl].setOptions.CURLOPT_HTTPGET = va_arg(valist, long);
       break;
