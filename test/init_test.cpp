@@ -79,9 +79,31 @@ TEST_F(GausInit, global_init_handles_null_proxy_in_options) {
   free(status);
 }
 
+TEST_F(GausInit, global_init_handles_null_ca_path_in_options) {
+  gaus_initialization_options_t options = {
+      .proxy = NULL,
+      .ca_path= NULL
+  };
+  gaus_error_t *status = gaus_global_init("fakeServerUrl", &options);
+  ASSERT_EQ(NULL, status);
+
+  free(status);
+}
+
 TEST_F(GausInit, global_init_handles_proxy_in_options) {
   gaus_initialization_options_t options = {
       "fakeproxy"
+  };
+  gaus_error_t *status = gaus_global_init("fakeServerUrl", &options);
+  ASSERT_EQ(NULL, status);
+
+  free(status);
+}
+
+TEST_F(GausInit, global_init_handles_ca_path_in_options) {
+  gaus_initialization_options_t options = {
+      .proxy = NULL,
+      .ca_path= "fake-ca-cert-path"
   };
   gaus_error_t *status = gaus_global_init("fakeServerUrl", &options);
   ASSERT_EQ(NULL, status);
