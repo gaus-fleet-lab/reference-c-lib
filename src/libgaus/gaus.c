@@ -42,6 +42,12 @@ gaus_error_t *gaus_global_init(const char *serverUrl, const gaus_initialization_
       //Ensure that proxy is initialized to NULL if not set.
       gaus_global_state.proxy = NULL;
     }
+    if (options && options->ca_path) {
+      gaus_global_state.ca_path = strdup(options->ca_path);
+    } else {
+      //Ensure that ca_path is initialized to NULL if not set.
+      gaus_global_state.ca_path = NULL;
+    }
     gaus_global_state.globalInitalized = true;
 
   }
@@ -51,6 +57,7 @@ gaus_error_t *gaus_global_init(const char *serverUrl, const gaus_initialization_
 void gaus_global_cleanup(void) {
   if (gaus_global_state.globalInitalized) {
     free(gaus_global_state.proxy);
+    free(gaus_global_state.ca_path);
     free(gaus_global_state.serverUrl);
     gaus_curl_global_cleanup();
     gaus_global_state.globalInitalized = false;
