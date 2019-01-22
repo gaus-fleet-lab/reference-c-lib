@@ -20,7 +20,8 @@
 gaus_global_state_t gaus_global_state = {
     NULL,   //Server
     false,  //Initialized
-    NULL    //Proxy
+    NULL,   //Proxy
+    NULL    //CA cert path
 };
 
 gaus_version_t gaus_client_library_version(void) {
