@@ -80,6 +80,12 @@ typedef struct {
    * "".  If default proxy options desired you can pass in NULL.
    * */
   const char *proxy;
+  /*!
+   *
+   * A weak pointer to a null terminated string specifying the ca_path to use if no ca_path
+   * is used this may be set to NULL.
+   * */
+  const char *ca_path;
 } gaus_initialization_options_t;
 
 /*************************************************************//**

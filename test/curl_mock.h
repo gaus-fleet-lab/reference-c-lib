@@ -41,6 +41,7 @@ public:
   void *CURLOPT_WRITEDATA = {nullptr}; //If this is set multiple times we overwrite old value
   write_function_t CURLOPT_WRITEFUNCTION;
   std::string CURLOPT_PROXY = MOCK_NOT_SET; //If this is set multiple times we overwrite old value
+  std::string CURLOPT_CAPATH = MOCK_NOT_SET; //If this is set multiple times we overwrite old value
   long CURLOPT_HTTPGET = MOCK_NOT_SET_LONG;
   std::vector<std::string> CURLOPT_HEADER;
 };

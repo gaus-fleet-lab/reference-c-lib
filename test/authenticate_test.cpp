@@ -409,6 +409,33 @@ TEST_F(GausAuthenticate, uses_proxy_from_init) {
   free(status);
 }
 
+TEST_F(GausAuthenticate, uses_ca_cert_path_from_init) {
+  std::string serverUrl = "fakeServerUrl";
+  gaus_session_t session;
+  std::string fakeDeviceSecret = "fakeDeviceSecret";
+  std::string fakeDeviceAccess = "fakeDeviceAccess";
+
+  std::string fakeCAPath = "fakeCAPath";
+  gaus_initialization_options_t options = {
+      .proxy = NULL,
+      .ca_path = fakeCAPath.c_str()
+  };
+
+  gaus_global_init(serverUrl.c_str(), &options);
+
+  gaus_error_t *status = gaus_authenticate(fakeDeviceAccess.c_str(), fakeDeviceSecret.c_str(), &session);
+
+  ASSERT_EQ(static_cast<gaus_error_t *>(NULL), status);
+  EXPECT_EQ(1, curlPerformData.size());
+  EXPECT_EQ(fakeCAPath, curlPerformData[0].CURLOPT_CAPATH);
+
+  //Cleanup after test
+  free(session.device_guid);
+  free(session.product_guid);
+  free(session.token);
+  free(status);
+}
+
 TEST_F(GausAuthenticate, does_not_use_proxy_if_null) {
   std::string serverUrl = "fakeServerUrl";
   gaus_session_t session;

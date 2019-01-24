@@ -207,6 +207,10 @@ static int request_post(const char *url, const char *auth_token, const char *pay
     gaus_curl_easy_setopt(curl, CURLOPT_PROXY, gaus_global_state.proxy);
   }
 
+  if (gaus_global_state.ca_path) {
+    gaus_curl_easy_setopt(curl, CURLOPT_CAPATH, gaus_global_state.ca_path);
+  }
+
   gaus_curl_easy_setopt(curl, CURLOPT_URL, url);
   gaus_curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload);
   gaus_curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strlen(payload));
@@ -306,6 +310,10 @@ static int request_get(const char *url, const char *auth_token,
 
   if (gaus_global_state.proxy) {
     gaus_curl_easy_setopt(curl, CURLOPT_PROXY, gaus_global_state.proxy);
+  }
+
+  if (gaus_global_state.ca_path) {
+    gaus_curl_easy_setopt(curl, CURLOPT_CAPATH, gaus_global_state.ca_path);
   }
 
   gaus_curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, response_writer);

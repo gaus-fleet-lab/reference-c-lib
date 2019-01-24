@@ -1162,6 +1162,66 @@ TEST_F(GausReport, uses_proxy_from_init) {
   free(status);
 }
 
+TEST_F(GausReport, uses_cacert_from_init) {
+  std::string serverUrl = "fakeServerUrl";
+  gaus_session_t fakeSession = {
+      strdup("fakeDeviceGUID"),
+      strdup("fakeProductGUID"),
+      strdup("fakeToken")
+  };
+  unsigned int filterCount = 0;
+  gaus_report_header_t header = {
+      strdup("FAKE_TIMESTAMP")
+  };
+  unsigned int reportCount = 1;
+  gaus_v_string_t vstrings[1] = {
+      strdup("key"),
+      strdup("value")
+  };
+  gaus_report_t report[1] = {
+      {
+          .report = {
+              .update_status = {
+                  .type = strdup("Status"),
+                  .ts = strdup("FAKE_TIME"),
+                  .v_int_count = 0,
+                  .v_ints = NULL,
+                  .v_float_count = 0,
+                  .v_floats = NULL,
+                  .v_string_count = 1,
+                  .v_strings = vstrings,
+                  .tag_count = 0,
+                  .tags = NULL
+              }
+          },
+          .report_type = GAUS_REPORT_UPDATE
+      }
+  };
+
+  std::string fakeCAPath = "fakeCAPath";
+  gaus_initialization_options_t options = {
+      .proxy = NULL,
+      .ca_path = fakeCAPath.c_str()
+  };
+  gaus_global_init(serverUrl.c_str(), &options);
+
+  gaus_error_t *status = gaus_report(&fakeSession, filterCount, NULL, &header, reportCount, report);
+
+  ASSERT_EQ(static_cast<gaus_error_t *>(NULL), status);
+  EXPECT_EQ(1, curlPerformData.size());
+  EXPECT_EQ(fakeCAPath, curlPerformData[0].CURLOPT_CAPATH);
+
+  //Cleanup after test
+  //Free report:
+  freeReports(reportCount, report);
+
+  free(fakeSession.device_guid);
+  free(fakeSession.product_guid);
+  free(fakeSession.token);
+  free(header.ts);
+  free(status);
+}
+
 TEST_F(GausReport, does_not_use_proxy_if_null) {
   std::string serverUrl = "fakeServerUrl";
   gaus_session_t fakeSession = {

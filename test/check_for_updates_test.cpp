@@ -1406,6 +1406,77 @@ TEST_F(GausCheckForUpdates, uses_proxy_from_init) {
   free(status);
 }
 
+TEST_F(GausCheckForUpdates, uses_ca_cert_from_init) {
+  std::string serverUrl = "fakeServerUrl";
+  std::string fakeDeviceGuid = "fakeDeviceGUID";
+  std::string fakeProductGuid = "fakeProductGUID";
+  std::string fakeToken = "fakeToken";
+  gaus_session_t fakeSession = {
+      strdup(fakeDeviceGuid.c_str()),
+      strdup(fakeProductGuid.c_str()),
+      strdup(fakeToken.c_str())
+  };
+  unsigned int filterCount = 0;
+  unsigned int updateCount = 0;
+  gaus_update_t *updates = NULL;
+
+  free(fakeResponse);
+
+
+  unsigned int fakeSize = 123;
+  std::string fakeUpdateType = "firmware";
+  std::string fakePackageType = "file";
+  std::string fakeMd5 = "FAKEMD5";
+  std::string fakeUpdateId = "FAKEUPDATEID";
+  std::string fakeVersion = "FAKEVERSION";
+  std::string fakeDownloadUrl = "FAKEDOWNLOADURL";
+  std::string fakeMetaKey = "FAKEMETAKEY";
+  std::string fakeMetaValue = "FAKEMETAVALUE";
+  std::string
+      fakeOneUpdateResponse = std::string("") + //Start with an empty string
+                              "{" +
+                              "\"updates\":[" +
+                              "{" +
+                              "\"metadata\": {" +
+                              "\"" + fakeMetaKey + "\":" + "\"" + fakeMetaValue + "\"" +
+                              "}," +
+                              "\"size\": " + std::to_string(fakeSize) +
+                              "," +
+                              "\"updateType\": \"" + fakeUpdateType + "\"," +
+                              "\"packageType\": \"" + fakePackageType + "\"," +
+                              "\"md5\": \"" + fakeMd5 + "\"," +
+                              "\"updateId\": \"" + fakeUpdateId + "\"," +
+                              "\"version\": \"" + fakeVersion + "\"," +
+                              "\"downloadUrl\": \"" + fakeDownloadUrl + "\"" +
+                              "}" +
+                              "]" +
+                              "}";
+
+  fakeResponse = strdup(fakeOneUpdateResponse.c_str());
+
+  std::string fakeCAPath = "fakeCAPath";
+  gaus_initialization_options_t options = {
+      .proxy = NULL,
+      .ca_path = fakeCAPath.c_str()
+  };
+
+  gaus_global_init(serverUrl.c_str(), &options);
+
+  gaus_error_t *status = gaus_check_for_updates(&fakeSession, filterCount, NULL, &updateCount, &updates);
+
+
+  ASSERT_EQ(static_cast<gaus_error_t *>(NULL), status);
+  EXPECT_EQ(1, curlPerformData.size());
+  EXPECT_EQ(fakeCAPath, curlPerformData[0].CURLOPT_CAPATH);
+
+  //Cleanup after test
+  freeUpdates(updateCount, &updates);
+  free(fakeSession.device_guid);
+  free(fakeSession.product_guid);
+  free(fakeSession.token);
+  free(status);
+}
+
 TEST_F(GausCheckForUpdates, does_not_use_proxy_if_null) {
   std::string serverUrl = "fakeServerUrl";
   std::string fakeDeviceGuid = "fakeDeviceGUID";

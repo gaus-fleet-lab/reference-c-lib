@@ -511,6 +511,37 @@ TEST_F(GausRegister, uses_proxy_from_init) {
   free(status);
 }
 
+TEST_F(GausRegister, uses_ca_cert_from_init) {
+  std::string serverUrl = "fakeServerUrl";
+  std::string fakeProdSecret = "fakeSecret";
+  std::string fakeProdAccess = "fakeProductAccess";
+  std::string fakeDeviceId = "fakeDeviceId";
+
+  std::string fakeCAPath = "fakeCAPath";
+  gaus_initialization_options_t options = {
+      .proxy = NULL,
+      .ca_path = fakeCAPath.c_str()
+  };
+
+
+  gaus_global_init(serverUrl.c_str(), &options);
+
+  char *device_access;
+  char *device_secret;
+  unsigned int poll_interval;
+  gaus_error_t *status = gaus_register(fakeProdAccess.c_str(), fakeProdSecret.c_str(), fakeDeviceId.c_str(),
+                                       &device_access, &device_secret, &poll_interval);
+
+  ASSERT_EQ(static_cast<gaus_error_t *>(NULL), status);
+  EXPECT_EQ(1, curlPerformData.size());
+  EXPECT_EQ(fakeCAPath, curlPerformData[0].CURLOPT_CAPATH);
+
+  //Cleanup after test
+  free(device_access);
+  free(device_secret);
+  free(status);
+}
+
 TEST_F(GausRegister, does_not_use_proxy_if_null) {
   std::string serverUrl = "fakeServerUrl";
   std::string fakeProdSecret = "fakeSecret";

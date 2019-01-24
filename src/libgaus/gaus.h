@@ -21,6 +21,7 @@ typedef struct {
   char *serverUrl;
   bool globalInitalized;
   char *proxy;
+  char *ca_path;
 } gaus_global_state_t;
 
 extern gaus_global_state_t gaus_global_state;
