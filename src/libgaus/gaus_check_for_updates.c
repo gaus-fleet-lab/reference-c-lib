@@ -29,7 +29,8 @@ gaus_check_for_updates(const gaus_session_t *session, unsigned int filter_count,
   char* url = malloc(required_length);
 
   if (!gaus_global_state.globalInitalized) {
-    return gaus_create_error(__func__, GAUS_NO_INIT_ERROR, 500, "Checked for updates without initializing");
+    status = gaus_create_error(__func__, GAUS_NO_INIT_ERROR, 500, "Checked for updates without initializing");
+    goto error;
   }
 
   if (!session || !session->device_guid || !session->product_guid || !session->token
