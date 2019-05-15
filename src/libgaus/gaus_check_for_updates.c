@@ -25,6 +25,8 @@ gaus_check_for_updates(const gaus_session_t *session, unsigned int filter_count,
   char *raw_check_for_update_result = NULL;
   json_t *json_update_response = NULL;
   char *query_parms = NULL;
+  size_t required_length = 256;
+  char* url = malloc(required_length);
 
   if (!gaus_global_state.globalInitalized) {
     return gaus_create_error(__func__, GAUS_NO_INIT_ERROR, 500, "Checked for updates without initializing");
@@ -58,16 +60,20 @@ gaus_check_for_updates(const gaus_session_t *session, unsigned int filter_count,
     free(new_filter);
   }
 
-    long status_code = 200; //Initialize to a default passing value unless request says otherwise.
+  long status_code = 200; //Initialize to a default passing value unless request says otherwise.
 
-    //Fixme: This should be dynamically allocated
-  char url[256];
-  if(create_url(url, sizeof(url), "%s/device/%s/%s/check-for-updates%s",
-             gaus_global_state.serverUrl, session->product_guid, session->device_guid, query_parms) < 0) {
-      status = gaus_create_error(__func__, GAUS_UNKNOWN_ERROR, 500,
-                                 "Failed make check for update string");
-      goto error;
+  //Fixme: This should be fixed for production
+  int url_length = create_url(url, required_length, "%s/device/%s/%s/check-for-updates%s",
+                            gaus_global_state.serverUrl, session->product_guid, session->device_guid, query_parms);
+
+  while(url_length < 0) {
+      free(url);
+      required_length += 256;
+      url = malloc(required_length);
+      url_length = create_url(url, required_length, "%s/device/%s/%s/check-for-updates%s",
+                 gaus_global_state.serverUrl, session->product_guid, session->device_guid, query_parms);
   }
+
   raw_check_for_update_result = request_get_as_string(url, session->token, &status_code);
   if (!raw_check_for_update_result && status_code < 400) {
     status = gaus_create_error(__func__, GAUS_UNKNOWN_ERROR, 500, "Posting authenticate failed to url %s", url);
@@ -90,6 +96,7 @@ gaus_check_for_updates(const gaus_session_t *session, unsigned int filter_count,
 
 
   error:
+  free(url);
   free(query_parms);
   free(raw_check_for_update_result);
   json_decref(json_update_response);
