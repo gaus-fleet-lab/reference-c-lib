@@ -58,11 +58,16 @@ gaus_check_for_updates(const gaus_session_t *session, unsigned int filter_count,
     free(new_filter);
   }
 
-  //Fixme: This should be dynamically allocated
+    long status_code = 200; //Initialize to a default passing value unless request says otherwise.
+
+    //Fixme: This should be dynamically allocated
   char url[256];
-  create_url(url, sizeof(url), "%s/device/%s/%s/check-for-updates%s",
-             gaus_global_state.serverUrl, session->product_guid, session->device_guid, query_parms);
-  long status_code = 200; //Initialize to a default passing value unless request says otherwise.
+  if(create_url(url, sizeof(url), "%s/device/%s/%s/check-for-updates%s",
+             gaus_global_state.serverUrl, session->product_guid, session->device_guid, query_parms) < 0) {
+      status = gaus_create_error(__func__, GAUS_UNKNOWN_ERROR, 500,
+                                 "Failed make check for update string");
+      goto error;
+  }
   raw_check_for_update_result = request_get_as_string(url, session->token, &status_code);
   if (!raw_check_for_update_result && status_code < 400) {
     status = gaus_create_error(__func__, GAUS_UNKNOWN_ERROR, 500, "Posting authenticate failed to url %s", url);

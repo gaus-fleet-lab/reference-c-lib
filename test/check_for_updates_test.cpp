@@ -1729,6 +1729,39 @@ TEST_F(GausCheckForUpdates, has_correct_version_in_agent_header) {
   free(status);
 }
 
+TEST_F(GausCheckForUpdates, works_with_very_long_url) {
+    std::string serverUrl = "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";
+    std::string fakeDeviceGuid = "fakeDeviceGUID";
+    std::string fakeProductGuid = "fakeProductGUID";
+    std::string fakeToken = "fakeToken";
+    gaus_session_t fakeSession = {
+            strdup(fakeDeviceGuid.c_str()),
+            strdup(fakeProductGuid.c_str()),
+            strdup(fakeToken.c_str())
+    };
+    unsigned int filterCount = 0;
+    unsigned int updateCount = 0;
+    gaus_update_t *updates = NULL;
+
+    gaus_global_init(serverUrl.c_str(), NULL);
+
+    gaus_error_t *status = gaus_check_for_updates(&fakeSession, filterCount, NULL, &updateCount, &updates);
+
+
+
+    ASSERT_GT(serverUrl.length(), 256);
+    ASSERT_EQ(static_cast<gaus_error_t *>(NULL), status);
+
+//Cleanup after test
+    free(fakeSession
+                 .device_guid);
+    free(fakeSession
+                 .product_guid);
+    free(fakeSession
+                 .token);
+    free(status);
+}
+
 //Test against a real backend
 //#define TEST_GAUS_REAL
 #ifdef TEST_GAUS_REAL

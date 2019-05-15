@@ -112,6 +112,7 @@ int create_url(char *dest, size_t dest_len, char *fmt, ...) {
     } else {
       dest[dest_len - 1] = '\0';
       logging(L_ERROR, "create_url: URL too large, truncating (%s)", dest);
+      return -1;
     }
   }
   va_end(ap);
