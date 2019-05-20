@@ -89,7 +89,7 @@ add_subdirectory(${curl_SOURCE_DIR}
                  ${curl_BINARY_DIR}
                  EXCLUDE_FROM_ALL)
 
-include_directories(${curl_BINARY_DIR}/include)
+include_directories(${curl_SOURCE_DIR}/include)
 
 # Prevent googletest from overriding the parent project's compiler/linker
 # when building with Microsoft Visual Studio
